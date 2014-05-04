@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script type="text/javascript" src="Scripts/jquery-2.1.0.js"></script>
+    <script type="text/javascript" src="Scripts/knockout-3.1.0.js"></script>
+    <script type="text/javascript" src="publisher.js"></script>
+    <script type="text/javascript" src="subscriber.js"></script>
+    <link href="main.css" rel="stylesheet" />
+</head>
+<body>
+
+    <div id="publisher" class="publisher">
+        <h3>I am publisher</h3>
+        <p>
+            Message <input type="text" data-bind="value: message" />
+            <input type="button" data-bind="click: notifySubscribers" value="Notify Subscribers" />
+        </p>
+    </div>
+
+    <div id="subscriber1" class="subscriber">
+        <h3>I am subscriber 1</h3>
+        <p>
+            Message from publisher: <span data-bind="text: message"></span>
+        </p>
+        <!-- ko if: timestamp -->
+        <p>
+        Received at <span data-bind="text: timestamp"></span>
+        </p>
+        <!-- /ko -->
+    </div>
+
+    <div id="subscriber2" class="subscriber">
+        <h3>I am subscriber 2</h3>
+        <p>
+            Message from publisher: <span data-bind="text: message"></span>
+        </p>
+        <!-- ko if: timestamp -->
+        <p>
+        Received at <span data-bind="text: timestamp"></span>
+        </p>
+        <!-- /ko -->
+    </div>
+
+</body>
+
+<script type="text/javascript">
+    var publisher = new webApplication.publisher();
+    var subscriber1 = new webApplication.subscriber();
+    var subscriber2 = new webApplication.subscriber();
+
+    ko.applyBindings(publisher, document.getElementById("publisher"));
+    ko.applyBindings(subscriber1, document.getElementById("subscriber1"));
+    ko.applyBindings(subscriber2, document.getElementById("subscriber2"));
+
+
+</script>
+
+</html>
