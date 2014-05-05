@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="Scripts/jquery-2.1.0.js"></script>
+    <script src="Scripts/knockout-3.1.0.js"></script>
+    
+    <style type="text/css">
+        
+        .chat-console {
+            margin: 10px;
+            width: 400px;
+            float: left;
+        }
+
+        .display-panel {
+            border: 1px black solid;
+            padding: 5px;
+            margin-top: 10px; 
+            margin-bottom: 10px;
+        }
+
+        #chatAgents {
+            overflow: auto;
+        }
+        .chat-message {
+            
+        }
+
+        .chat-sender {
+            
+        }
+
+    </style>
+
+</head>
+    <body>
+        <span>Type message into text aread and click send to submit a chat message</span>
+        
+        <section id="chatAgents">
+            <div id="chat1" class="chat-console" data-bind="template: { name: 'chatConsoleTemplate', data: $data }">
+            </div>
+          
+            <div id="chat2" class="chat-console" data-bind="template: { name: 'chatConsoleTemplate', data: $data }">
+            </div>
+
+            <div id="chat3" class="chat-console" data-bind="template: { name: 'chatConsoleTemplate', data: $data }">
+            </div>
+        </section>
+        
+        <script type="text/html" id="chatConsoleTemplate">
+            
+            <h3>Hi, I am <span data-bind="text: name"></span> console</h3>
+            <textarea data-bind="value: message"></textarea>
+            <div>
+                <input type="button" data-bind="click: function () { clear(); }, value: 'Clear'" />
+                <input type="button" data-bind="click: function () { send(); }, value: 'Send'" />
+            </div>
+                
+            <div class="display-panel" data-bind="visible: publishedMessages().length > 0">
+            <!-- ko foreach: publishedMessages -->
+            <div>
+                <span class="chat-sender" data-bind="text: sender"></span> : <span class="chat-message" data-bind="    html: message"></span>                
+            </div>
+            <!-- /ko -->
+            </div>
+            
+        </script>
+
+        <script type="text/javascript">
+
+            var bus = function(jquery) {
+                this.subscribe = function(eventType, action) {
+                    jquery(document).on(eventType, action);
+                };
+
+                this.publish = function(eventType, message) {
+                    jquery.event.trigger(
+                        {
+                            type: eventType,
+                            message: message
+                        });
+                };
+            };
+
+            var chatConsole = function(name, bus) {
+                var self = this;
+                this.name = ko.observable(name);
+                this.message = ko.observable('');
+                this.send = function() {
+                    bus.publish('messagePublished', { message: self.message(), sender: self.name() });
+                    self.clear();
+                };
+                this.clear = function() {
+                    self.message('');
+                };
+                this.publishedMessages = ko.observableArray([]);
+
+                bus.subscribe('messagePublished', function(e) {
+                    self.publishedMessages.push(e.message);
+                });                
+            };
+
+            var myBus = new bus($);
+
+            var chat1Console = new chatConsole('chat1', myBus);
+            ko.applyBindings(chat1Console, document.getElementById('chat1'));
+            
+            var chat2Console = new chatConsole('chat2', myBus);
+            ko.applyBindings(chat2Console, document.getElementById('chat2'));
+            
+            var chat3Console = new chatConsole('chat3', myBus);
+            ko.applyBindings(chat3Console, document.getElementById('chat3'));
+
+        </script>
+    </body>
+</html>
